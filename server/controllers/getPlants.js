@@ -1,4 +1,4 @@
-import pool from './connection.js';
+import pool from '../connection.js';
 
 export const getPlants = async (req, res) => {
     try {
