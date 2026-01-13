@@ -4,7 +4,7 @@ export default function Home() {
     const [plants, setPlants] = useState([]);
      
     const getPlants = () => {
-        fetch('http://localhost:3306/api/plants')
+        fetch('http://localhost:3000/api/plants')
             .then(response => response.json())
             .then(data => setPlants(data));
     };
