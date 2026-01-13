@@ -1,4 +1,5 @@
-
+import {useState} from "react";
+import Plot from "./Plot";
 export default function Garden() {
     const [plots, setPlots] = useState([]);
     function createPlot(width, length) {
