@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Plot from "./Plot";
-import PlotList from "./PlotList";
+import Plot from "./Plot.jsx";
+import PlotList from "./PlotList.jsx";
 import Seeds from './Seeds.jsx'
 
 export default function Garden() {
