@@ -1,15 +1,26 @@
 import { useEffect, useState } from "react";
 
-export default function Plot({ width, length }) {
+export default function Plot({ width, length, plants = [] }) {
     const [plot, setPlot] = useState([]);
     useEffect(() => {
         let newPlot = [];
-        for (let i = 0; i < width; i++) {
-            const row = [];
-            for (let j = 0; j < length; j++) {
-                row.push("dirt");
+
+        if (plants.length > 0) {
+            for(let plant of plants) {
+                const row = [];
+                for (let j = 0; j < plant.length; j++) {
+                    row.push(plant[j]);
+                }
+                newPlot.push(row);
             }
-            newPlot.push(row);
+        } else {
+            for (let i = 0; i < width; i++) {
+                const row = [];
+                for (let j = 0; j < length; j++) {
+                    row.push("dirt");
+                }
+                newPlot.push(row);
+            }
         }
         setPlot(newPlot);
     }, []);
