@@ -1,43 +1,35 @@
 import { useEffect, useState } from "react";
 import Cell from './Cell.jsx'
 
-export default function Plot({ width, length, seed, name, description}) {
-    const [plot, setPlot] = useState([]);
-
-    const plants = []
-
-    useEffect(() => {
-        let newPlot = [];
-
-        if (plants.length > 0) {
-            for(let plant of plants) {
-                const row = [];
-                for (let j = 0; j < plant.length; j++) {
-                    row.push(plant[j]);
-                }
-                newPlot.push(row);
-            }
-        } else {
-            for (let i = 0; i < width; i++) {
-                const row = [];
-                for (let j = 0; j < length; j++) {
-                    row.push(<Cell plant={seed}/>);
-                }
-                newPlot.push(row);
-            }
-        }
-        setPlot(newPlot);
-    }, []);
-
+export default function Plot({ seed, plants, name, description}) {
+    const [plot, setPlot] = useState({name, description, plants});
+    
+    console.log("current seed: ", seed)
+    function updatePlants(currentSeed, index) {
+        setPlot((prevPlot) => {
+            const newPlot = {...prevPlot};
+            newPlot.plants[index.i][index.j] = currentSeed;
+            return newPlot;
+        })
+    }
+    
     return (
         <div>
-            <h1>Plot</h1>
+            <h1>{plot.name}</h1>
+            <p>{plot.description}</p>
             <table>
                 <tbody>
-                    {plot.map((row, rowIndex) => (
+                    {plot.plants && plot.plants.map((row, rowIndex) => (
                         <tr key={rowIndex}>
-                            {row.map((cell, cellIndex) => (
-                                <td key={cellIndex}>{cell}</td>
+                            {row.map((plant, colIndex) => (
+                                <td key={colIndex}>
+                                    <Cell 
+                                        index={{i: rowIndex, j: colIndex}} 
+                                        plant={plant} 
+                                        seed={seed} 
+                                        updatePlants={updatePlants}
+                                    />
+                                </td>
                             ))}
                         </tr>
                     ))}
