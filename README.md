@@ -1,3 +1,19 @@
+TODO: 
+    - functionality to save Plots to DB (including plant info)
+    - User accounts (login, register, (connect saved Plots to user))
+    - get plant info from real plant API, and store it in database
+    - (name, scientific name, sunlight, avg height, avg width, germination to harvest time, planting zone) to replace mock data.
+    - Search bar to search for plants (replace Request Scientific Plant Names button)
+    - Make sure to update seeds list so searched plants can be added to garden.
+    - Check to make sure all plants in a plot are compatible with each other.(similar sunlight) highlight in red when different. (eventually, check all catagories.)
+    - 
+
+
+
+
+
+
+
 1. Project Overview
 - Project Name & Tagline: Cultivation Coordination. Keep your garden in check!
 
