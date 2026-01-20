@@ -1,15 +1,19 @@
 import { useState } from "react";
 import Plot from "./Plot";
 import PlotList from "./PlotList";
+import Seeds from './Seeds.jsx'
+
 export default function Garden() {
     const [plots, setPlots] = useState([]);
     const [currentPlot, setCurrentPlot] = useState(null);
+    const [currentSeed, setSeed] = useState('Wheat')
+
     function selectPlot(id) {
         setCurrentPlot(id)
     }
 
     function createPlot(width, length) {
-        const plot = <Plot width={width} length={length} />
+        const plot = <Plot width={width} length={length} seed={currentSeed}/>
         setPlots([...plots, plot]);
     }
 
@@ -17,7 +21,6 @@ export default function Garden() {
         const length = formData.get("length")
         const width = formData.get("width")
         createPlot(width, length)
-        console.log("plots: " + plots)
     }
 
     return (
@@ -33,6 +36,8 @@ export default function Garden() {
             <PlotList plots={plots} selectPlot={selectPlot} />
             {currentPlot && (
                 plots[currentPlot]
+            ) && (
+                <Seeds changeSeed={setSeed} />
             )}
         </div>
     )
