@@ -6,7 +6,14 @@ TODO:
     - Search bar to search for plants (replace Request Scientific Plant Names button)
     - Make sure to update seeds list so searched plants can be added to garden.
     - Check to make sure all plants in a plot are compatible with each other.(similar sunlight) highlight in red when different. (eventually, check all catagories.)
-    - 
+    SERVER: 
+    - create a Plots table to store plot info.
+    - create a table for User info
+    - update User info to connect saved Plots to user
+    - update plants to real plant API info
+    - update plants to connect to Plots
+    user has many plots, plots have one user. plots have many plants, plants belong to many plots.
+    
 
 
 
