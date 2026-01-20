@@ -5,10 +5,10 @@ export default function PlotList({ plots, selectPlot }) {
         setOpenList(!openList);
     }
     return (
-        <div>
+        <div class="plotList">
             <button onClick={handleOpenList}>My Plots</button>
             {openList && plots.map((plot, id) => (
-                <button onClick={() => selectPlot(id)} key={id}>{plot.name}</button>
+                <button class = "list" onClick={() => selectPlot(id)} key={id}>{plot.name}</button>
             ))}
         </div>
     )

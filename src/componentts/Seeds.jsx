@@ -10,7 +10,7 @@ export default function Seeds({changeSeed}) {
     }, [])
     
     return (
-        <div>
+        <div class="seeds">
             {plantList.map((plant) => {
                 return <button key={plant.id} onClick={() => changeSeed(plant.common_name)}>{plant.common_name}</button>
             })}

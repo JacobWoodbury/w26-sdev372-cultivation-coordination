@@ -40,21 +40,21 @@ export default function Garden() {
 
     return (
         <div>
-            <h1>Garden</h1>
+            <h2>Garden Creation</h2>
             <form action={submitForm}>
                 <input id="name" name="name" type="text" placeholder="Plot Name" />
                 <input id="description" name="description" type="text" placeholder="Plot Description" />
                 <input id="length" name="length" type="number" placeholder="Length (ft)" />
                 <input id="width" name="width" type="number" placeholder="Width (ft)" />
-                <button type="submit">Add Plot</button>
+                <button class = "submission" type="submit">Add Plot</button>
             </form>
             <PlotList plots={plots} selectPlot={selectPlot} />
 
+            <Seeds changeSeed={setCurrentSeed} />
 
             {currentPlot !== null && (
                 <Plot key={currentPlot} seed={currentSeed} plants={plots[currentPlot].plants} name={plots[currentPlot].name} description={plots[currentPlot].description} />
             )}
-            <Seeds changeSeed={setCurrentSeed} />
         </div>
     )
 }
