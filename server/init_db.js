@@ -3,6 +3,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const PERENUAL_API_KEY = process.env.PERENUAL_API_KEY;
+const PERENUAL_URL = "https://perenual.com/api/v2/species-list"
+ 
 //using this file to check db is being updated and has something in it while we work.
 //this file will need to be changed once we decide how many plants we want to have in the database and where the info is going to come from. 
 
