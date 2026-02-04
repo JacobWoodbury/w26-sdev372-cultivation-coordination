@@ -76,7 +76,10 @@ input {
 }
 
 .seeds {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 15px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 20px;
 }
