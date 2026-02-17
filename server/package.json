@@ -1,0 +1,19 @@
+{
+  "name": "plants-server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "initialize": "node init_db.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mysql2": "^3.16.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
