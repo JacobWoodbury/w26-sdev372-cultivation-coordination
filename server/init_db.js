@@ -1,8 +1,12 @@
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
+import fetch from 'node-fetch';
 
 dotenv.config();
 
+const PERENUAL_API_KEY = process.env.PERENUAL_API_KEY;
+const PERENUAL_URL = "https://perenual.com/api/v2/species-list"
+ 
 //using this file to check db is being updated and has something in it while we work.
 //this file will need to be changed once we decide how many plants we want to have in the database and where the info is going to come from. 
 
@@ -34,17 +38,25 @@ async function initDb() {
         if (rows[0].count > 0) {
              console.log('Table already has data. Skipping seed.');
         } else {
+
+    //Commented out old insert query
+
             // Seed data
-            const insertQuery = `
-                INSERT INTO plants (common_name, scientific_name) VALUES
-                ('Snake Plant', 'Sansevieria trifasciata'),
-                ('Monstera', 'Monstera deliciosa'),
-                ('Peace Lily', 'Spathiphyllum'),
-                ('Fiddle Leaf Fig', 'Ficus lyrata'),
-                ('Aloe Vera', 'Aloe barbadensis miller')
-            `;
-            await connection.execute(insertQuery);
-            console.log('Seed data inserted.');
+            // const insertQuery = `
+            //     INSERT INTO plants (common_name, scientific_name) VALUES
+            //     ('Snake Plant', 'Sansevieria trifasciata'),
+            //     ('Monstera', 'Monstera deliciosa'),
+            //     ('Peace Lily', 'Spathiphyllum'),
+            //     ('Fiddle Leaf Fig', 'Ficus lyrata'),
+            //     ('Aloe Vera', 'Aloe barbadensis miller')
+            // `;
+            // await connection.execute(insertQuery);
+            // console.log('Seed data inserted.');
+
+    //Added new helper function to insert mass amount of plant names to DB
+            await seedFromPerenual(connection, 10); // ~200 plants
+            console.log("Seeded plants from Perenual API.");
+
         }
 
         await connection.end();
@@ -55,5 +67,40 @@ async function initDb() {
         process.exit(1);
     }
 }
+
+/*
+@param connection - Db sql connection
+@param pages - number of API pages to fetch
+
+loop through each page and collect common names and scientific names under the given API Key
+inserts into DB
+
+*/
+async function seedFromPerenual(connection, pages = 5) {
+  for (let page = 1; page <= pages; page++) {
+    console.log(`Fetching plants page ${page}...`);
+
+    const res = await fetch(
+      `${PERENUAL_URL}?key=${PERENUAL_API_KEY}&page=${page}`
+    );
+    const json = await res.json();
+
+    for (const plant of json.data) {
+      const common = plant.common_name;
+      const scientific = plant.scientific_name?.[0];
+
+      if (!common || !scientific) continue;
+
+      await connection.execute(
+        `INSERT IGNORE INTO plants (common_name, scientific_name)
+         VALUES (?, ?)`,
+        [common, scientific]
+      );
+    }
+
+    await new Promise(r => setTimeout(r, 250)); // rate limit safety
+  }
+}
+
 
 initDb();

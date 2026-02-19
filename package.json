@@ -8,16 +8,10 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "cd server && nodemon server.js",
-    "initialize": "cd server && node init_db.js"
+    "server": "cd server && npm run dev",
+    "initialize": "cd server && npm run initialize"
   },
   "dependencies": {
-    "cors": "^2.8.6",
-    "dotenv": "^17.2.3",
-    "express": "^5.2.1",
-    "mysql2": "^3.16.0",
-    "next": "^16.1.1",
-    "nodemon": "^3.1.11",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.71.1"
