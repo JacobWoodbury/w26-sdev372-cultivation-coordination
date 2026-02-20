@@ -6,7 +6,8 @@ export default function Seeds({changeSeed}) {
     React.useEffect(() => {
         fetch('http://localhost:3000/api/plants')
             .then(response => response.json())
-            .then(data => setPlantList(data));
+            .then(data => setPlantList(Array.isArray(data) ? data : []))
+            .catch(() => setPlantList([]));
     }, [])
     
     return (

@@ -2,6 +2,7 @@ services:
   mysql:
     image: mysql:8
     container_name: mysql-container
+    command: ["mysqld", "--bind-address=0.0.0.0"]
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-Cu1tivation}
       MYSQL_DATABASE: ${DB_NAME:-plants}
@@ -9,13 +10,35 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD:-Cu1tivation}
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      # Only pass when TCP is open and DB accepts queries (entrypoint fully done)
+      test: ["CMD-SHELL", "mysql -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" -e \"SELECT 1\" || exit 1"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 15
+      start_period: 45s
+
+  init-db:
+    build:
+      context: ./server
+      dockerfile: dockerfile
+    container_name: init-db
+    environment:
+      DB_HOST: mysql
+      DB_USER: ${DB_USER:-devuser}
+      DB_PASSWORD: ${DB_PASSWORD:-Cu1tivation}
+      DB_NAME: ${DB_NAME:-plants}
+      PERENUAL_API_KEY: ${PERENUAL_API_KEY:-}
+    command: node init_db.js
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: "no"
+    networks:
+      - app-network
 
   backend:
     build:
@@ -30,10 +53,9 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-Cu1tivation}
       DB_NAME: ${DB_NAME:-plants}
       PERENUAL_API_KEY: ${PERENUAL_API_KEY:-}
-    command: sh -c "node init_db.js || true && exec npm run start"
     depends_on:
-      mysql:
-        condition: service_healthy
+      init-db:
+        condition: service_completed_successfully
     networks:
       - app-network
 
