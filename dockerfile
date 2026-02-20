@@ -7,6 +7,7 @@ RUN npm run build
 
 FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx-default.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 
 #-g is for global configurations, daemon off is to run the nginx server in the foreground so that the docker container doen't exit.
