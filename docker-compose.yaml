@@ -1,0 +1,59 @@
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-Cu1tivation}
+      MYSQL_DATABASE: ${DB_NAME:-plants}
+      MYSQL_USER: ${DB_USER:-devuser}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-Cu1tivation}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: dockerfile
+    container_name: backend-container
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: mysql
+      DB_USER: ${DB_USER:-devuser}
+      DB_PASSWORD: ${DB_PASSWORD:-Cu1tivation}
+      DB_NAME: ${DB_NAME:-plants}
+      PERENUAL_API_KEY: ${PERENUAL_API_KEY:-}
+    command: sh -c "node init_db.js || true && exec npm run start"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # --- Frontend Service ---
+  frontend:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: frontend-container
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+# --- Networks Definition ---
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
