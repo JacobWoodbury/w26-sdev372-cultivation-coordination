@@ -17,6 +17,7 @@ export default function Seeds({inputText, changeSeed}) {
             return;
         }
         else {
+            console.log(el.text.toLowerCase())
             return el.text.toLowerCase().includes(inputText)
         }
     })
