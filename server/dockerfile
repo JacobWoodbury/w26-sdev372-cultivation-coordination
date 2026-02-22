@@ -1,0 +1,8 @@
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+#ci is an installer for reproducible builds 
+RUN npm ci --omit=dev
+COPY . .
+EXPOSE 3000
+CMD ["npm", "run", "start"]

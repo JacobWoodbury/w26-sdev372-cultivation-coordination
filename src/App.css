@@ -83,3 +83,7 @@ input {
   margin: 30px auto;
   padding: 20px;
 }
+
+.search {
+  width: 30%;
+}

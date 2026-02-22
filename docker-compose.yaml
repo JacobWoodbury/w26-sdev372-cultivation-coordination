@@ -1,0 +1,85 @@
+services:
+# DB container
+  mysql:
+    image: mysql:8
+    container_name: mysql-container
+    #this allows the DB to be accessed from the outside Need to check if its safe to do this.
+    command: ["mysqld", "--bind-address=0.0.0.0"]
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-defaultpassword}
+      MYSQL_DATABASE: ${DB_NAME:-plants}
+      MYSQL_USER: ${DB_USER:-devuser}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-defaultpassword}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+    healthcheck:
+      # checking that DB is ready
+      test: ["CMD-SHELL", "mysql -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" -e \"SELECT 1\" || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 45s
+#this is just getting plants from the API and inserting them into the DB might remove this later so that we dont have to re-run the init-db container every time we want to add more plants.(it should be in the volume)
+  init-db:
+    build:
+      context: ./server
+      dockerfile: dockerfile
+    container_name: init-db
+    environment:
+      DB_HOST: mysql
+      DB_USER: ${DB_USER:-devuser}
+      DB_PASSWORD: ${DB_PASSWORD:-defaultpassword}
+      DB_NAME: ${DB_NAME:-plants}
+      PERENUAL_API_KEY: ${PERENUAL_API_KEY:-}
+    command: node init_db.js
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: "no"
+    networks:
+      - app-network
+
+# backend container
+  backend:
+    build:
+      context: ./server
+      dockerfile: dockerfile
+    container_name: backend-container
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: mysql
+      DB_USER: ${DB_USER:-devuser}
+      DB_PASSWORD: ${DB_PASSWORD:-defaultpassword}
+      DB_NAME: ${DB_NAME:-plants}
+      PERENUAL_API_KEY: ${PERENUAL_API_KEY:-}
+    depends_on:
+      init-db:
+        condition: service_completed_successfully
+    networks:
+      - app-network
+
+# frontend container
+  frontend:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: frontend-container
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+# network allows containers to communicate with each other
+networks:
+  app-network:
+    driver: bridge
+
+# volumes are used to store data outside of the container (outside of the container so that data is not lost when the container is deleted) do we need to map this to a directory on the vm?
+volumes:
+  mysql_data:

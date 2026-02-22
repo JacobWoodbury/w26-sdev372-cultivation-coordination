@@ -1,13 +1,17 @@
 import { useState } from "react";
-import Garden from "./componentts/Garden";
+import Garden from "./components/Garden";
 
 export default function Home() {
     const [plants, setPlants] = useState([]);
 
     const getPlants = () => {
-        fetch('http://localhost:3000/api/plants')
-            .then(response => response.json())
-            .then(data => setPlants(data));
+        fetch('/api/plants')
+            .then(response => {
+                if (!response.ok) return response.json().then(d => Promise.reject(d));
+                return response.json();
+            })
+            .then(data => setPlants(Array.isArray(data) ? data : []))
+            .catch(() => setPlants([]));
     };
     return (
         <div>
@@ -17,7 +21,7 @@ export default function Home() {
             {plants.length > 0 && (
                 <ul>
                     {plants.map(plant => (
-                        <li key={plant.id}>Name: {plant.name} Scientific Name: {plant.scientific_name}</li>
+                        <li key={plant.id}>Name: {plant.common_name} Scientific Name: {plant.scientific_name}</li>
                     ))}
                 </ul>
             )}

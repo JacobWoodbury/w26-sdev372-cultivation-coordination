@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Plot from "./Plot.jsx";
 import PlotList from "./PlotList.jsx";
-import Seeds from './Seeds.jsx'
+import Search from './Search.jsx'
 
 export default function Garden() {
     const [plots, setPlots] = useState([]);
@@ -50,7 +50,7 @@ export default function Garden() {
             </form>
             <PlotList plots={plots} selectPlot={selectPlot} />
 
-            <Seeds changeSeed={setCurrentSeed} />
+            <Search changeSeed={setCurrentSeed} />
 
             {currentPlot !== null && (
                 <Plot key={currentPlot} seed={currentSeed} plants={plots[currentPlot].plants} name={plots[currentPlot].name} description={plots[currentPlot].description} />
