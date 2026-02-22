@@ -14,7 +14,7 @@ export default function Seeds({inputText, changeSeed}) {
 
     const filteredData = plantList.filter((el) => {
         if (inputText === '') {
-            return;
+            return el;
         }
         else {
             console.log(el.text.toLowerCase())
