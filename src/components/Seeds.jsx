@@ -10,19 +10,14 @@ export default function Seeds({inputText, changeSeed}) {
             .catch(() => setPlantList([]));
     }, [])
 
-    console.log(plantList)
-
     const filteredData = plantList.filter((el) => {
-        console.log(el)
         if (inputText === '') {
-            return el.common_name;
+            return
         }
         else {
             return el.common_name.toLowerCase().includes(inputText)
         }
     })
-
-    console.log(filteredData)
     
     return (
         <div class="seeds">
