@@ -10,6 +10,8 @@ export default function Seeds({inputText, changeSeed}) {
             .catch(() => setPlantList([]));
     }, [])
 
+    console.log(plantList)
+
     const filteredData = plantList.filter((el) => {
         if (inputText === '') {
             return;
@@ -18,6 +20,8 @@ export default function Seeds({inputText, changeSeed}) {
             return el.text.toLowerCase().includes(inputText)
         }
     })
+
+    console.log(filteredData)
     
     return (
         <div class="seeds">
