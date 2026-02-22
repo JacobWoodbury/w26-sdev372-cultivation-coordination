@@ -6,9 +6,7 @@ export default function Search({changeSeed}) {
     const [inputText, setInputText] = useState("");
     
     function inputHandler(e) {
-        console.log(e.target.value)
         const lowerCase = e.target.value.toLowerCase();
-        console.log(lowerCase)
         setInputText(lowerCase)
     }
 

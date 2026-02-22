@@ -13,6 +13,7 @@ export default function Seeds({inputText, changeSeed}) {
     console.log(plantList)
 
     const filteredData = plantList.filter((el) => {
+        console.log(el)
         if (inputText === '') {
             return el;
         }
