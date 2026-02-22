@@ -15,11 +15,10 @@ export default function Seeds({inputText, changeSeed}) {
     const filteredData = plantList.filter((el) => {
         console.log(el)
         if (inputText === '') {
-            return el;
+            return el.common_name;
         }
         else {
-            console.log(el.text.toLowerCase())
-            return el.text.toLowerCase().includes(inputText)
+            return el.common_name.toLowerCase().includes(inputText)
         }
     })
 
