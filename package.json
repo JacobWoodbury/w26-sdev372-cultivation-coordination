@@ -10,9 +10,10 @@
     "preview": "vite preview",
     "server": "cd server && npm run dev",
     "initialize": "cd server && npm run initialize",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "e2e": "playwright test"
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
