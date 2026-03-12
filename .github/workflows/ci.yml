@@ -13,10 +13,10 @@ jobs:
         with:   
           node-version: 20
       - run: npm ci
-      - run: npm test:ci
+      - run: npm test
 
       - name: BE Test
         working-directory: server
         run: |
           npm ci
-          npm test:ci
+          npm test
