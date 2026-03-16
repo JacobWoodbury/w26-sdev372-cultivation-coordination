@@ -10,13 +10,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:   
+        with:
           node-version: 20
       - run: npm ci
-      - run: npm test:ci
-
+      # Restore Playwright browsers cache so we don't have to download them every time
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+      - run: npm test
       - name: BE Test
         working-directory: server
         run: |
           npm ci
-          npm test:ci
+          npm test

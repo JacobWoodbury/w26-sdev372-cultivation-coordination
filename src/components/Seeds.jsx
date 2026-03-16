@@ -20,7 +20,7 @@ export default function Seeds({inputText, changeSeed}) {
     })
     
     return (
-        <div class="seeds">
+        <div className="seeds">
             {filteredData.map((plant) => {
                 return <button key={plant.id} onClick={() => changeSeed(plant.common_name)}>{plant.common_name}</button>
             })}

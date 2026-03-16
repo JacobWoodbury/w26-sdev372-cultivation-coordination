@@ -86,4 +86,6 @@ input {
 
 .search {
   width: 30%;
+  background-color: whitesmoke;
+  color: black;
 }
