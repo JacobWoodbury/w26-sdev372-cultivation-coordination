@@ -45,7 +45,7 @@ jobs:
       - name: BE Test
         working-directory: server
         env:
-          DB_HOST: mysql
+          DB_HOST: 127.0.0.1
           DB_USER: devuser
           DB_PASSWORD: pass
           DB_NAME: plants
