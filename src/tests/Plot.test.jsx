@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import Home from "../Home";
+import App from "../App.jsx";
 import { expect } from "vitest";
 
 test("renders garden creation section", () => {
-  render(<Home />); //Renders SPA 
+  render(<App />); //Renders SPA 
   expect(screen.getByText("Garden Creation")).toBeInTheDocument(); //Text should be rendered within the SPA loaded
 });
 
@@ -15,7 +15,7 @@ FE unit test:
 
 
 test("dims des and title test", () => {
-    render(<Home/>); //Renders SPA
+    render(<App/>); //Renders SPA
     fireEvent.change(screen.getByPlaceholderText("Plot Name"), { //grabs input box "Plot Name"
         target: {value: "Test Plot"} //plot named "Test Plot" successfully (if passes)
     });
