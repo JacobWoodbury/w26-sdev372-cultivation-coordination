@@ -6,7 +6,8 @@
     "start": "node start.js",
     "dev": "nodemon server.js",
     "initialize": "node init_db.js",
-    "test": "vitest"
+    "test": "vitest",
+    "test:integration": "vitest run tests/integration/integration.test.js"
   },
   "dependencies": {
     "cors": "^2.8.6",
