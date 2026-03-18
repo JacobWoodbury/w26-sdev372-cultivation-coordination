@@ -4,7 +4,7 @@ import { expect } from "vitest";
 
 test("renders garden creation section", () => {
   render(<App />); //Renders SPA 
-  expect(screen.getByText("Garden Creation")).toBeInTheDocument(); //Text should be rendered within the SPA loaded
+  expect(screen.getByText("Garden Creation")).to.exist; //Text should be rendered within the SPA loaded
 });
 
 /*
@@ -14,8 +14,9 @@ FE unit test:
 */
 
 
-test("dims des and title test", () => {
+test("dims des and title test", async () => {
     render(<App/>); //Renders SPA
+    fireEvent.click(screen.getByText("New plot"));
     fireEvent.change(screen.getByPlaceholderText("Plot Name"), { //grabs input box "Plot Name"
         target: {value: "Test Plot"} //plot named "Test Plot" successfully (if passes)
     });
@@ -32,9 +33,9 @@ test("dims des and title test", () => {
         target: {value: "3"}
     });
 
-    fireEvent.click(screen.getByText("Add Plot"));
+    fireEvent.click(screen.getByText("Create plot"));
 
-    expect(screen.getByText("Test Plot")).toBeInTheDocument();
-    expect(screen.getByText("Test Description")).toBeInTheDocument();
+    expect(await screen.findByText("Test Plot")).to.exist;
+    expect(await screen.findByText("Test Description")).to.exist;
     expect(screen.getAllByText("Dirt").length).toBe(9);
 })

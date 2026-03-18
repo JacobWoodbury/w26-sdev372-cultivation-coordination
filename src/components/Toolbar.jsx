@@ -1,26 +1,30 @@
-import React from 'react'
+import PlotList from "./PlotList.jsx";
 
-export default function Toolbar() {
+export default function Toolbar({
+  plots,
+  currentPlotId,
+  onSelectPlot,
+  onOpenNewPlot,
+}) {
+  return (
+    <aside className="toolbar">
+      <h2 className="toolbarTitle">Toolbar</h2>
 
+      <section>
+        <h3>My plots</h3>
+        <PlotList
+          plots={plots}
+          selectPlot={(idx) => {
+            const plot = plots[idx];
+            if (!plot) return onSelectPlot(null);
+            return onSelectPlot(plot.id ?? null);
+          }}
+        />
 
-    
-    return (
-        <div>
-            <h1>User Name</h1>
-            <div>
-                <h2>My plots</h2>
-
-                <button>new plot</button>
-
-                <button>save plot</button>
-                <button>delete plot</button>
-            </div>
-            <div>
-                <h2>My plants</h2>
-                <button>new plant</button>
-                <button>save plant</button>
-                <button>delete plant</button>
-            </div>
-        </div>
-    )
+        <button className="toolbarPrimary" type="button" onClick={onOpenNewPlot}>
+          New plot
+        </button>
+      </section>
+    </aside>
+  );
 }

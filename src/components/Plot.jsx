@@ -1,17 +1,6 @@
-import { useState } from "react";
 import Cell from './Cell.jsx'
 
-export default function Plot({ seed, plants, name, description}) {
-    const [plot, setPlot] = useState({name, description, plants});
-    
-    function updatePlants(currentSeed, index) {
-        setPlot((prevPlot) => {
-            const newPlot = {...prevPlot};
-            newPlot.plants[index.i][index.j] = currentSeed;
-            return newPlot;
-        })
-    }
-    
+export default function Plot({ seed, plot, onPlant }) {
     return (
         <div>
             <h1>{plot.name}</h1>
@@ -26,7 +15,7 @@ export default function Plot({ seed, plants, name, description}) {
                                         index={{i: rowIndex, j: colIndex}} 
                                         plant={plant} 
                                         seed={seed} 
-                                        updatePlants={updatePlants}
+                                        onPlant={onPlant}
                                     />
                                 </td>
                             ))}

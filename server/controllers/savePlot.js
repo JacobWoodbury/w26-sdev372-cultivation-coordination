@@ -15,7 +15,6 @@ export const savePlot = async (req, res) => {
         [name, description, plantsValue, plot.id]
       );
 
-      // Return the updated plot shape back to the client
       res.status(200).json({
         id: plot.id,
         name,

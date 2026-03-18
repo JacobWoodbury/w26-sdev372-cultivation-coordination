@@ -2,7 +2,7 @@ import { useState } from 'react';
 import TextField from "@mui/material/TextField"
 import Seeds from './Seeds.jsx'
 
-export default function Search({changeSeed}) {
+export default function Search({ onChangeSeed }) {
     const [inputText, setInputText] = useState("");
     
     function inputHandler(e) {
@@ -12,7 +12,7 @@ export default function Search({changeSeed}) {
 
     return (
         <>
-            <h1>React Search</h1>
+            <h2>Search Plants</h2>
             <div className="search">
                 <TextField 
                 id="outlined-basic"
@@ -22,7 +22,7 @@ export default function Search({changeSeed}) {
                 label="Search"
                 />
             </div>
-            <Seeds inputText={inputText} changeSeed={changeSeed} />
+            <Seeds inputText={inputText} onChangeSeed={onChangeSeed} />
         </>
     )
 }

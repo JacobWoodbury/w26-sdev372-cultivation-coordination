@@ -1,8 +1,8 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
 }
 
 .logo {
@@ -88,4 +88,109 @@ input {
   width: 30%;
   background-color: whitesmoke;
   color: black;
+}
+
+.appLayout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: 100vh;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: auto;
+  padding: 16px;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(6px);
+}
+
+.toolbarTitle {
+  margin: 0 0 12px 0;
+}
+
+.plotList {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.plotList > button {
+  text-align: left;
+}
+
+.list {
+  margin-left: 2rem;
+  width: 100%;
+}
+
+.toolbarPrimary {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-top: 10px;
+}
+
+.appMain {
+  padding: 24px;
+}
+
+.plotActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 6px 0 14px 0;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+}
+
+.modalCard {
+  width: min(560px, calc(100vw - 32px));
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.modalClose {
+  padding: 0.25em 0.65em;
+  font-size: 1.25em;
+  line-height: 1;
+}
+
+.modalForm {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.modalGrid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
 }

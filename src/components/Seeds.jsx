@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function Seeds({inputText, changeSeed}) {
+export default function Seeds({ inputText, onChangeSeed }) {
     const [plantList, setPlantList] = React.useState([])
 
     React.useEffect(() => {
@@ -22,7 +22,14 @@ export default function Seeds({inputText, changeSeed}) {
     return (
         <div className="seeds">
             {filteredData.map((plant) => {
-                return <button key={plant.id} onClick={() => changeSeed(plant.common_name)}>{plant.common_name}</button>
+                return (
+                  <button
+                    key={plant.id}
+                    onClick={() => onChangeSeed(plant.common_name)}
+                  >
+                    {plant.common_name}
+                  </button>
+                );
             })}
         </div>
     )
