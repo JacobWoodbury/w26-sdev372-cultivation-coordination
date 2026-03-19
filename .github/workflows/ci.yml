@@ -4,8 +4,33 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+
 jobs:
-  test:
+  backend-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: be-tests
+        working-directory: server
+        run: |
+          npm ci
+          npm run test:unit
+  
+  frontend-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run test:fe
+  
+  integration:
+    needs: [backend-unit, frontend-unit]
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -27,6 +52,28 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: integration-test
+        working-directory: server
+        env:
+          DB_HOST: 127.0.0.1
+          DB_USER: devuser
+          DB_PASSWORD: pass
+          DB_NAME: plants
+          PERENUAL_API_KEY: ${{ secrets.PERENUAL_API_KEY }}
+          PERENUAL_URL: https://perenual.com/api/v2/species-list
+        run: |
+          npm ci
+          npm run initialize
+          npm run test:integration
+  
+  playwright: 
+    needs: [integration]
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
       - run: npm ci
       # Restore Playwright browsers cache so we don't have to download them every time
       - name: Cache Playwright browsers
@@ -37,29 +84,6 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             playwright-${{ runner.os }}-
-
-  backend-unit:
-    needs: [test]
-    runs-on: ubuntu-latest
-    steps:
-      - run: npm run test:be
-  
-  frontend-unit:
-    needs: [test]
-    runs-on: ubuntu-latest
-    steps:
-      - run: npm run test:fe
-  
-  integration:
-    needs: [test, backend-unit, frontend-unit]
-    runs-on: ubuntu-latest
-    steps:
-      - run: npm run initialize
-      - run: npm run test:integration
-  
-  playwright: 
-    needs: [test, integration]
-    runs-on: ubuntu-latest
-    steps: 
-      - run: npx playwright install --with-deps
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
       - run: npm run test:e2e
