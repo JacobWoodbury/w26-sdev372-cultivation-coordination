@@ -39,23 +39,21 @@ jobs:
             playwright-${{ runner.os }}-
 
   backend-unit:
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - run: npm run test:be
   
   frontend-unit:
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - run: npm run test:fe
   
   integration:
     needs: [test, backend-unit, frontend-unit]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: npm ci
       - run: npm run initialize
       - run: npm run test:integration
   
