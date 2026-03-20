@@ -16,9 +16,28 @@ vi.stubGlobal("fetch", vi.fn(async (input, init) => {
   const url = String(input);
   const method = (init?.method ?? "GET").toUpperCase();
 
+  const detailsMatch = url.match(/\/api\/plants\/(\d+)\/details\b/);
+  if (detailsMatch && method === "GET") {
+    const id = Number(detailsMatch[1]);
+    return jsonResponse({
+      id,
+      common_name: "Mock Plant",
+      scientific_name: ["M. mock"],
+      perenual_id: 100,
+      thumbnailUrl: "https://example.com/thumb.png",
+    });
+  }
+
   // Plants list used by Seeds/Search
   if (url.includes("/api/plants") && method === "GET") {
-    return jsonResponse([]);
+    return jsonResponse([
+      {
+        id: 1,
+        common_name: "Mock Plant",
+        scientific_name: "M. mock",
+        perenual_id: 100,
+      },
+    ]);
   }
 
   // Plots

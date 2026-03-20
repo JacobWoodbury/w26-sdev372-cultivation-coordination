@@ -191,3 +191,19 @@ input {
   gap: 10px;
   margin-top: 6px;
 }
+
+.cellPlantThumb {
+  display: block;
+  object-fit: cover;
+  border-radius: 6px;
+  margin: 0 auto 6px;
+}
+
+.brushHint {
+  margin: 6px 0;
+  font-size: 0.95rem;
+}
+
+.dirtBrush {
+  margin-bottom: 10px;
+}

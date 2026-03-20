@@ -4,16 +4,29 @@ import Garden from './components/Garden';
 import Toolbar from './components/Toolbar';
 import NewPlotModal from './components/NewPlotModal';
 import { deletePlot, fetchPlots, savePlot } from './api/plots';
+import {
+  emptyCell,
+  normalizePlotPlantsGrid,
+  plantCell,
+} from './utils/plotCells';
 
 function App() {
   const [plots, setPlots] = useState([]);
   const [currentPlotId, setCurrentPlotId] = useState(null);
-  const [currentSeed, setCurrentSeed] = useState('Dirt');
+  /** null = paint dirt (empty cells); otherwise brush for planting with thumbnail */
+  const [selectedPlant, setSelectedPlant] = useState(null);
   const [newPlotOpen, setNewPlotOpen] = useState(false);
-  
+
   const getPlots = () => {
     fetchPlots()
-      .then((data) => setPlots(data))
+      .then((data) =>
+        setPlots(
+          (Array.isArray(data) ? data : []).map((p) => ({
+            ...p,
+            plants: normalizePlotPlantsGrid(p.plants),
+          }))
+        )
+      )
       .catch(() => setPlots([]));
   };
 
@@ -30,7 +43,7 @@ function App() {
     const grid = [];
     for (let i = 0; i < width; i++) {
       const row = [];
-      for (let j = 0; j < length; j++) row.push('Dirt');
+      for (let j = 0; j < length; j++) row.push(emptyCell());
       grid.push(row);
     }
     return grid;
@@ -43,18 +56,30 @@ function App() {
       plants: createPlotGrid(width, length),
     };
 
-    // Immediately persist so the plot always has a DB id.
     const saved = await savePlot(plot);
-    setPlots((prev) => [...prev, saved]);
-    setCurrentPlotId(saved.id);
+    const normalized = {
+      ...saved,
+      plants: normalizePlotPlantsGrid(saved.plants),
+    };
+    setPlots((prev) => [...prev, normalized]);
+    setCurrentPlotId(normalized.id);
   }
 
-  function onPlant(seed, index) {
+  function onPlant(index) {
     setPlots((prev) =>
       prev.map((p) => {
         if (p.id !== currentPlotId) return p;
-        const newPlants = p.plants.map((row) => row.slice());
-        newPlants[index.i][index.j] = seed;
+        const newPlants = p.plants.map((row, ri) =>
+          row.map((cell, cj) => {
+            if (ri !== index.i || cj !== index.j) return cell;
+            if (!selectedPlant) return emptyCell();
+            return plantCell({
+              plantId: selectedPlant.id,
+              commonName: selectedPlant.common_name,
+              thumbnailUrl: selectedPlant.thumbnailUrl,
+            });
+          })
+        );
         return { ...p, plants: newPlants };
       })
     );
@@ -71,8 +96,12 @@ function App() {
       plants: plot.plants,
     });
 
-    setPlots((prev) => prev.map((p) => (p.id === currentPlotId ? saved : p)));
-    setCurrentPlotId(saved.id);
+    const normalized = {
+      ...saved,
+      plants: normalizePlotPlantsGrid(saved.plants),
+    };
+    setPlots((prev) => prev.map((p) => (p.id === currentPlotId ? normalized : p)));
+    setCurrentPlotId(normalized.id);
   }
 
   async function onDeleteCurrentPlot() {
@@ -88,8 +117,6 @@ function App() {
     <div className="appLayout">
       <Toolbar
         plots={plots}
-        onChangeSeed={setCurrentSeed}
-        currentPlotId={currentPlotId}
         onSelectPlot={setCurrentPlotId}
         onOpenNewPlot={() => setNewPlotOpen(true)}
       />
@@ -105,7 +132,8 @@ function App() {
         )}
         
         <Garden
-          currentSeed={currentSeed}
+          selectedPlant={selectedPlant}
+          onSelectPlant={setSelectedPlant}
           plot={currentPlot}
           onPlant={onPlant}
         />

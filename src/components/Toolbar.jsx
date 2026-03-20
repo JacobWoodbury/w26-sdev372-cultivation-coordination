@@ -1,7 +1,6 @@
 import PlotList from "./PlotList.jsx";
-import Search from "./Search.jsx";
 
-export default function Toolbar({plots, onChangeSeed, currentPlotId, onSelectPlot, onOpenNewPlot,}) {
+export default function Toolbar({ plots, onSelectPlot, onOpenNewPlot }) {
   return (
     <aside className="toolbar">
       <h2 className="toolbarTitle">Toolbar</h2>
@@ -21,7 +20,6 @@ export default function Toolbar({plots, onChangeSeed, currentPlotId, onSelectPlo
           New plot
         </button>
 
-        <Search onChangeSeed={onChangeSeed} />
       </section>
     </aside>
   );

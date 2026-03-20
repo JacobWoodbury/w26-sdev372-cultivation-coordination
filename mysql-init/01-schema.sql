@@ -4,7 +4,8 @@ USE plants;
 CREATE TABLE IF NOT EXISTS plants (
     id INT AUTO_INCREMENT PRIMARY KEY,
     common_name VARCHAR(255) NOT NULL,
-    scientific_name VARCHAR(255) NOT NULL
+    scientific_name VARCHAR(255) NOT NULL,
+    perenual_id INT NULL UNIQUE
 );
 CREATE TABLE IF NOT EXISTS plots (
     id INT AUTO_INCREMENT PRIMARY KEY,

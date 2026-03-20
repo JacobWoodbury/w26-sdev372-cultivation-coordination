@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import App from "../App.jsx";
 import { expect } from "vitest";
 
@@ -39,3 +39,37 @@ test("dims des and title test", async () => {
     expect(await screen.findByText("Test Description")).to.exist;
     expect(screen.getAllByText("Dirt").length).toBe(9);
 })
+
+test("selecting a plant and planting shows thumbnail in cell", async () => {
+  render(<App />);
+  fireEvent.click(screen.getByText("New plot"));
+  fireEvent.change(screen.getByPlaceholderText("Plot Name"), {
+    target: { value: "Thumb Plot" },
+  });
+  fireEvent.change(screen.getByPlaceholderText("Plot Description"), {
+    target: { value: "Desc" },
+  });
+  fireEvent.change(screen.getByPlaceholderText("Length (ft)"), {
+    target: { value: "1" },
+  });
+  fireEvent.change(screen.getByPlaceholderText("Width (ft)"), {
+    target: { value: "1" },
+  });
+  fireEvent.click(screen.getByText("Create plot"));
+  await screen.findByText("Thumb Plot");
+
+  const searchBox = screen.getByRole("textbox", { name: /search/i });
+  fireEvent.change(searchBox, { target: { value: "mock" } });
+
+  fireEvent.click(await screen.findByRole("button", { name: "Mock Plant" }));
+  await waitFor(() => {
+    expect(screen.getByText(/Brush:/).textContent).toContain("Mock Plant");
+  });
+
+  const plantHereButtons = screen.getAllByRole("button", {
+    name: "Plant Here...",
+  });
+  fireEvent.click(plantHereButtons[0]);
+
+  expect(await screen.findByAltText("Mock Plant")).to.exist;
+});

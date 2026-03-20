@@ -12,3 +12,17 @@ export async function fetchPlants() {
   return Array.isArray(data) ? data : [];
 }
 
+/** Local DB plant id → Perenual-backed details + thumbnail (via backend proxy). */
+export async function fetchPlantDetailsById(localPlantId) {
+  const response = await fetch(
+    apiUrl(`/api/plants/${localPlantId}/details`)
+  );
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null);
+    throw errorBody ?? new Error("Failed to fetch plant details");
+  }
+
+  return await response.json();
+}
+

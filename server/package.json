@@ -7,7 +7,7 @@
     "dev": "nodemon start.js",
     "initialize": "node init_db.js",
     "test": "vitest",
-    "test:unit": "vitest run getPlants.test.js",
+    "test:unit": "vitest run",
     "test:integration": "vitest run tests/integration/integration.test.js"
   },
   "dependencies": {

@@ -5,9 +5,6 @@ dotenv.config();
 
 const PERENUAL_API_KEY = process.env.PERENUAL_API_KEY;
 const PERENUAL_URL = process.env.PERENUAL_URL || "https://perenual.com/api/v2/species-list";
- 
-//using this file to check db is being updated and has something in it while we work.
-//this file will need to be changed once we decide how many plants we want to have in the database and where the info is going to come from. 
 
 const dbConfig = {
     host: process.env.DB_HOST,
@@ -16,27 +13,84 @@ const dbConfig = {
     database: process.env.DB_NAME
 };
 
+async function ensurePerenualIdColumn(connection) {
+  const [cols] = await connection.execute(
+    `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'plants' AND COLUMN_NAME = 'perenual_id'`
+  );
+  if (cols.length === 0) {
+    await connection.execute(
+      `ALTER TABLE plants ADD COLUMN perenual_id INT NULL UNIQUE`
+    );
+    console.log('Added column plants.perenual_id');
+  }
+}
+
+/** Backfill perenual_id for rows missing it by matching common_name from species-list pages. */
+async function backfillPerenualIds(connection, maxPages = 10) {
+  if (!PERENUAL_API_KEY) return;
+  const [missing] = await connection.execute(
+    `SELECT id, common_name FROM plants WHERE perenual_id IS NULL`
+  );
+  if (missing.length === 0) return;
+
+  const nameToPerenual = new Map();
+  for (let page = 1; page <= maxPages; page++) {
+    const res = await fetch(
+      `${PERENUAL_URL}?key=${PERENUAL_API_KEY}&page=${page}`
+    );
+    const json = await res.json();
+    if (!json?.data || !Array.isArray(json.data)) break;
+    for (const plant of json.data) {
+      const common = plant.common_name;
+      if (common && plant.id != null) {
+        nameToPerenual.set(common.toLowerCase(), plant.id);
+      }
+    }
+    await new Promise((r) => setTimeout(r, 250));
+  }
+
+  for (const row of missing) {
+    const pid = nameToPerenual.get(String(row.common_name).toLowerCase());
+    if (pid != null) {
+      await connection.execute(
+        `UPDATE plants SET perenual_id = ? WHERE id = ?`,
+        [pid, row.id]
+      );
+    }
+  }
+  if (missing.length > 0) {
+    console.log('Backfill perenual_id attempted for legacy plant rows.');
+  }
+}
+
 async function initDb() {
   try {
       const connection = await mysql.createConnection(dbConfig);
       console.log('Connected to database.');
 
-      // Create table
-      const createTableQuery = `CREATE TABLE IF NOT EXISTS plants (id INT AUTO_INCREMENT PRIMARY KEY, common_name VARCHAR(255) NOT NULL, scientific_name VARCHAR(255) NOT NULL)`;
+      const createTableQuery = `CREATE TABLE IF NOT EXISTS plants (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        common_name VARCHAR(255) NOT NULL,
+        scientific_name VARCHAR(255) NOT NULL,
+        perenual_id INT NULL UNIQUE
+      )`;
       await connection.execute(createTableQuery);
       console.log('Table "plants" created or already exists.');
 
+      await ensurePerenualIdColumn(connection);
+
       const newTableQuery = `CREATE TABLE IF NOT EXISTS plots (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL, description TEXT, plants JSON)`;
       await connection.execute(newTableQuery);
-      console.log('Table "plots" created or already exists')
+      console.log('Table "plots" created or already exists');
 
-      // Check if data exists
+      await backfillPerenualIds(connection, 10);
+
       const [rows] = await connection.execute('SELECT COUNT(*) as count FROM plants');
       if (rows[0].count > 0) {
         console.log('Table already has data. Skipping seed.');
       } else {
-        //Added new helper function to insert mass amount of plant names to DB
-        await seedFromPerenual(connection, 1); 
+        await seedFromPerenual(connection, 10);
         console.log("Seeded plants from Perenual API.");
       }
 
@@ -48,14 +102,6 @@ async function initDb() {
   }
 }
 
-/*
-@param connection - Db sql connection
-@param pages - number of API pages to fetch
-
-loop through each page and collect common names and scientific names under the given API Key
-inserts into DB
-
-*/
 async function seedFromPerenual(connection, pages = 1) {
   if (!PERENUAL_API_KEY) {
     console.warn('PERENUAL_API_KEY missing; skipping Perenual seed.');
@@ -78,19 +124,19 @@ async function seedFromPerenual(connection, pages = 1) {
     for (const plant of json.data) {
       const common = plant.common_name;
       const scientific = plant.scientific_name?.[0];
+      const perenualId = plant.id;
 
-      if (!common || !scientific) continue;
+      if (!common || !scientific || perenualId == null) continue;
 
       await connection.execute(
-        `INSERT IGNORE INTO plants (common_name, scientific_name)
-         VALUES (?, ?)`,
-        [common, scientific]
+        `INSERT IGNORE INTO plants (perenual_id, common_name, scientific_name)
+         VALUES (?, ?, ?)`,
+        [perenualId, common, scientific]
       );
     }
 
-    await new Promise(r => setTimeout(r, 250)); // rate limit safety
+    await new Promise(r => setTimeout(r, 250));
   }
 }
-
 
 initDb();
