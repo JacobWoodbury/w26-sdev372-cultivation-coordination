@@ -36,7 +36,7 @@ async function initDb() {
         console.log('Table already has data. Skipping seed.');
       } else {
         //Added new helper function to insert mass amount of plant names to DB
-        await seedFromPerenual(connection, 10); // ~200 plants
+        await seedFromPerenual(connection, 1); 
         console.log("Seeded plants from Perenual API.");
       }
 
