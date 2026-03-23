@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "node start.js",
-    "dev": "nodemon server.js",
+    "dev": "nodemon start.js",
     "initialize": "node init_db.js",
     "test": "vitest",
     "test:unit": "vitest run getPlants.test.js",
