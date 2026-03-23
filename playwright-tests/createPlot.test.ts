@@ -18,4 +18,5 @@ test('user can create a plot', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Playwright Plot' })).toBeVisible();
   await expect(page.getByText('Playwright Test')).toBeVisible();
 
+  await page.getByRole('button', { name: 'Delete Plot' }).click()
 });

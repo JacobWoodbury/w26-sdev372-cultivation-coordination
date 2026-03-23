@@ -14,4 +14,6 @@ test('user can see saved plots', async ({ page }) => {
   // Plot list is collapsible in the toolbar.
   await page.getByRole('button', { name: 'My Plots' }).click();
   await expect(page.getByRole('button', { name: 'Playwright Plot' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Delete Plot' }).click()
 });
