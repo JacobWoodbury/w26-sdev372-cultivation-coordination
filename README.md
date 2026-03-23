@@ -1,13 +1,13 @@
 # TODO: 
-- [ ] functionality to save Plots to DB (including plant info)
+- [x] functionality to save Plots to DB (including plant info)
 - [ ] User accounts (login, register, (connect saved Plots to user))
-- [ ] get plant info from real plant API, and store it in database
+- [x] get plant info from real plant API, and store it in database
 - [ ] (name, scientific name, sunlight, avg height, avg width, germination to harvest time, planting zone) to replace mock data.
-- [ ] Search bar to search for plants (replace Request Scientific Plant Names button)
-- [ ] Make sure to update seeds list so searched plants can be added to garden.
+- [x] Search bar to search for plants (replace Request Scientific Plant Names button)
+- [x] Make sure to update seeds list so searched plants can be added to garden.
 - [ ] Check to make sure all plants in a plot are compatible with each other.(similar sunlight) highlight in red when different(eventually, check all catagories.)
 ### SERVER: 
-- [ ] create a Plots table to store plot info.
+- [x] create a Plots table to store plot info.
 - [ ] create a table for User info
 - [ ] update User info to connect saved Plots to user
 - [x] update plants to real plant API info
@@ -35,3 +35,8 @@
 - ***User Flows***: The user will accomplish tasks by first creating their custom garden size using boxes as plots, just like excel, where each plot represents a fixed amount of feet. Then, the user will be able to plant a seed in each plot. Based on what they plant, a warning can pop up about potential risks and what the user should do to fix it.
 
 - ***Wireframes/Sketches***: ![Wireframe](Wireframe-Cultivation.png)
+
+## CI/CD Workflow
+- ***CI Workflow***: This is a GitHub Actions workflow that automatically runs all of our tests on either pushes to main or a pull request to main. There are 4 jobs that run: backend-unit, frontend-unit, integration, and playwright. These jobs run all the unit tests, integration tests, and E2E tests. The workflow fails if any tests fail, and integration relies on both unit tests to pass and playwright relies on integration to pass. Each job runs on ubuntu-latest, and they all utilize npm scripts in order to run the tests. Both integration and playwright jobs have set up a testing database to run their tests. The playwright job installs playwright browsers in order to run. Test results will be shown on the GitHub Actions tab. 
+
+- ***CD Workflow*** This is a GitHub Actions workflow that automatically deploys to our VM (our orange pi). First, the CI Workflow must be completed, and code must be merged into main. Then, the CI Workflow must be successful; all the tests must pass. Once this happens, it will connect to the VM by installing Tailscale and using the necessary GitHub secrets to access the VM with SSH. Finally, it runs a script to access the VM, pull the merged changes, and restart both Docker and the tailscale funnel in order to run all recent changes. 
