@@ -75,8 +75,6 @@ services:
     networks:
       - app-network
 
-
-  # Full test suite from repo root (see dockerfile stage: node-test)
   integration-tests:
     build:
       context: .

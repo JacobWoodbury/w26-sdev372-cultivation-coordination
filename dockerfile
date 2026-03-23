@@ -6,9 +6,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# --- Full repo + Node: run root `npm test` (Vitest + Playwright). Debian for browser deps. ---
-# Build only this stage:  docker build --target node-test -t plants-test .
-# Default `docker build` uses the final stage (production nginx), not this one.
+
 FROM node:20-bookworm-slim AS node-test
 WORKDIR /app
 COPY package*.json ./

@@ -69,12 +69,35 @@ jobs:
   playwright: 
     needs: [integration]
     runs-on: ubuntu-latest
+    env:
+      DB_HOST: 127.0.0.1
+      DB_USER: devuser
+      DB_PASSWORD: pass
+      DB_NAME: plants
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: pass
+          MYSQL_DATABASE: plants
+          MYSQL_USER: devuser
+          MYSQL_PASSWORD: pass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -uroot -ppass || exit 1"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
     steps: 
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
       - run: npm ci
+      - name: Install backend dependencies
+        working-directory: server
+        run: npm ci
       # Restore Playwright browsers cache so we don't have to download them every time
       - name: Cache Playwright browsers
         uses: actions/cache@v4
@@ -86,4 +109,7 @@ jobs:
             playwright-${{ runner.os }}-
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
+      - name: Initialize database schema
+        working-directory: server
+        run: npm run initialize
       - run: npm run test:e2e
