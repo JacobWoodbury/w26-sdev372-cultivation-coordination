@@ -66,6 +66,7 @@ services:
     build:
       context: .
       dockerfile: dockerfile
+      target: production
     container_name: frontend-container
     ports:
       - "80:80"
@@ -75,21 +76,26 @@ services:
       - app-network
 
 
-  #TEST CONTAINER
+  # Full test suite from repo root (see dockerfile stage: node-test)
   integration-tests:
     build:
-      context: ./server
+      context: .
       dockerfile: dockerfile
+      target: node-test
     container_name: integration-tests
     environment:
       DB_HOST: mysql
       DB_USER: ${DB_USER:-devuser}
       DB_PASSWORD: ${DB_PASSWORD:-defaultpassword}
       DB_NAME: ${DB_NAME:-plants}
-    command: npm test
+      PERENUAL_API_KEY: ${PERENUAL_API_KEY:-}
+      PERENUAL_URL: ${PERENUAL_URL:-https://perenual.com/api/v2/species-list}
+    command: npm run test
     depends_on:
       mysql:
         condition: service_healthy
+      init-db:
+        condition: service_completed_successfully
     networks:
       - app-network
 
